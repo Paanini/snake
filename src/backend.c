@@ -27,7 +27,7 @@ bool remove_from_list(PointList* elt, PointList** list) {
   return false;
 }
 
-enum Status move_snake(Board* board, enum Direction dir) {
+enum Status move_snake(Board* board, enum Direction dir, int *score) {
   // Create a new beginning. Check boundaries.
   PointList* beginning = next_move(board, dir);
   if (beginning == NULL) {
@@ -53,6 +53,9 @@ enum Status move_snake(Board* board, enum Direction dir) {
     board->snake = beginning;
     remove_from_list(beginning, &(board->foods));
     add_new_food(board);
+
+    /* Increment the score */
+    (*score)++;
 
     return SUCCESS;
   }
@@ -158,7 +161,7 @@ Board* create_board(PointList* snake, PointList* foods, int xmax, int ymax) {
 }
 
 PointList* create_snake() {
-  PointList* a = create_cell(20,3);
+  PointList* a = create_cell(2,3);
   PointList* b = create_cell(2,2);
   a->next = b;
   return a;

@@ -19,7 +19,7 @@ typedef struct {
 
 
 bool is_same_place(PointList* cell1, PointList* cell2);
-enum Status move_snake(Board* board, enum Direction dir);
+enum Status move_snake(Board* board, enum Direction dir, int *score);
 PointList* next_move(Board* board, enum Direction dir);
 PointList* create_cell(int x, int y);
 PointList* create_random_cell(int xmax, int ymax);
