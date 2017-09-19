@@ -31,7 +31,7 @@ int main() {
   }
 
   while(true) {
-    erase();
+    clear();
     display_points(board->snake, ACS_BLOCK);
     display_points(board->foods, ACS_DIAMOND);
     mvprintw(1, xmax-10, "Score: %d\n", (score)?*score: 0);
