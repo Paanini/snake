@@ -27,7 +27,7 @@ bool remove_from_list(PointList* elt, PointList** list) {
   return false;
 }
 
-enum Status move_snake(Board* board, enum Direction dir) {
+enum Status move_snake(Board* board, enum Direction dir, int *score) {
   // Create a new beginning. Check boundaries.
   PointList* beginning = next_move(board, dir);
   if (beginning == NULL) {
@@ -53,6 +53,9 @@ enum Status move_snake(Board* board, enum Direction dir) {
     board->snake = beginning;
     remove_from_list(beginning, &(board->foods));
     add_new_food(board);
+
+    /* Increment the score */
+    (*score)++;
 
     return SUCCESS;
   }
@@ -96,11 +99,17 @@ PointList* next_move(Board* board, enum Direction dir) {
       new_x = snake->x + 1;
       break;
   }
-  if (new_x < 0 || new_y < 0 || new_x >= board->xmax || new_y >= board->ymax) {
-    return NULL;
-  } else {
-    return create_cell(new_x, new_y);
-  }
+
+  /* Wrap around the snake */
+  if (new_x < 0)
+      new_x = board->xmax + new_x;
+  else if(new_y < 0)
+      new_y = board->ymax + new_y;
+  else if (new_x >= board->xmax)
+      new_x = new_x - board->xmax;
+  else if (new_y >= board->ymax)
+      new_y = new_y - board->ymax;
+  return create_cell(new_x, new_y);
 }
 
 PointList* create_random_cell(int xmax, int ymax) {
@@ -109,9 +118,16 @@ PointList* create_random_cell(int xmax, int ymax) {
 
 void add_new_food(Board* board) {
   PointList* new_food;
+
+  /* Ensure that we don't create new food in:
+   * 1. Points where food already exists
+   * 2. Points where the snake exists
+   */
   do {
     new_food = create_random_cell(board->xmax, board->ymax);
   } while(list_contains(new_food, board->foods) || list_contains(new_food, board->snake));
+  
+  /* Prepend newly created food to food list */
   new_food->next = board->foods;
   board->foods = new_food;
 }
